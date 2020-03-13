@@ -82,6 +82,30 @@ app.post('/signUp', (req, res) => {
   }) 
 });
 
+app.post('/updateUserStatus', (req, res) => {
+    var jsonResp = {}
+    var { email, status } = req.body
+    db.update({
+        status: status
+      })
+      .where('email', '=', email)
+      .into('User')
+      .returning('*')
+      .then(data => {
+        jsonResp.status = "success"
+        jsonResp.info = "status updated"
+        jsonResp.data = data
+        res.status(200).send(jsonResp);  
+      })
+      .catch(err => {
+        console.log(err);
+        jsonResp.status = "failed"
+        jsonResp.info = "status not updated"
+        res.status(400).send(jsonResp);
+    })
+
+});
+
 app.post('/addFood', (req, res) => {
     var jsonResp = {}
     const { name, cuisine, ingredients, lotNumber, costOfProduction, sellingCost } = req.body;
