@@ -1,5 +1,6 @@
 const express = require('express');
-const knex = require('knex')
+const knex = require('knex');
+const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -52,6 +53,33 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
  */
 app.get('/testing', (req, res) => {
     res.status(200).send("endpoint testing");
+});
+
+app.post('/signUp', (req, res) => {
+    var jsonResp = {}
+    const { name, email, password, status, lastLoginAt } = req.body;
+    const hash = bcrypt.hashSync(password, 10);
+    db('User').insert({
+        name: name,
+        email: email,
+        password: hash,
+        status: status,
+        createdAt: new Date(),
+        lastLoginAt: lastLoginAt
+    })
+  .returning('*')
+  .then(user => {
+    jsonResp.status = "success"
+    jsonResp.info = "user created"
+    jsonResp.data = user[0]
+    res.status(200).send(jsonResp);
+  })
+  .catch(err => {
+    console.log(err);
+    jsonResp.status = "failed"
+    jsonResp.info = "user not created"
+    res.status(400).send(jsonResp);
+  }) 
 });
 
 app.post('/addFood', (req, res) => {
