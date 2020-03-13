@@ -118,11 +118,38 @@ app.post('/login', (req, res) => {
     })
 });
 
+app.post('/updateUser', (req, res) => {
+    var jsonResp = {}
+    var { status, name } = req.body
+    db.update({
+        name: name,
+        status: status,
+        updatedAt: new Date()
+      })
+      .where('email', '=', email)
+      .into('User')
+      .returning('*')
+      .then(data => {
+        jsonResp.status = "success"
+        jsonResp.info = "user updated"
+        jsonResp.data = data
+        res.status(200).send(jsonResp);  
+      })
+      .catch(err => {
+        console.log(err);
+        jsonResp.status = "failed"
+        jsonResp.info = "user not updated"
+        res.status(400).send(jsonResp);
+    })
+
+});
+
 app.post('/updateUserStatus', (req, res) => {
     var jsonResp = {}
     var { email, status } = req.body
     db.update({
-        status: status
+        status: status,
+        updatedAt: new Date()
       })
       .where('email', '=', email)
       .into('User')
