@@ -82,6 +82,42 @@ app.post('/signUp', (req, res) => {
   }) 
 });
 
+app.post('/login', (req, res) => {
+    var jsonResp = {}
+    db.select('email', 'password').from('User')
+    .where('email', '=', req.body.email)
+    .then(data => {
+      const isValid = bcrypt.compareSync(req.body.password, data[0].password)
+      if(isValid) {
+        return db.select('email', 'name')
+        .from('User')
+        .where('email', '=', req.body.email)
+        .then(user => {
+          jsonResp.status = "success"
+          jsonResp.info = "login successful"
+          jsonResp.data = user[0]
+          res.status(200).send(jsonResp)  
+        })
+        .catch(err => {
+          console.log(err)
+          jsonResp.status = "failed"
+          jsonResp.info = "login invalid"
+          res.status(401).send(jsonResp)  
+        })
+      } else {
+        jsonResp.status = "failed"
+        jsonResp.info = "login invalid"
+        res.status(401).send(jsonResp)  
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      jsonResp.status = "failed"
+      jsonResp.info = "login invalid"
+      res.status(401).send(jsonResp)  
+    })
+});
+
 app.post('/updateUserStatus', (req, res) => {
     var jsonResp = {}
     var { email, status } = req.body
