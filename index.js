@@ -416,8 +416,10 @@ app.post('/ingredientByQuantity', (req, res) => {
 
 app.post('/createOrder', (req, res) => {
     var jsonResp = {}
-    const { email, status, orderDate, dateOfdelivery, modeOfTransport } = req.body;
+    const { food, quantity, email, status, orderDate, dateOfdelivery, modeOfTransport } = req.body;
     db('Order').insert({
+        food: food,
+        quantity: quantity,
         email: email,
         status: status,
         orderDate: orderDate,
