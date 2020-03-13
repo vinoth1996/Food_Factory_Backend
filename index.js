@@ -301,9 +301,27 @@ app.post('/ingredientByQuantity', (req, res) => {
 
 app.post('/createOrder', (req, res) => {
     var jsonResp = {}
-    const { status, orderDate, dateOfDelivery, modeOfTransport } = req.body;
-
-
+    const { email, status, orderDate, dateOfdelivery, modeOfTransport } = req.body;
+    db('Order').insert({
+        email: email,
+        status: status,
+        orderDate: orderDate,
+        dateOfdelivery: dateOfdelivery,
+        modeOfTransport: modeOfTransport
+    })
+    .returning('*')
+    .then(order => {
+        jsonResp.status = "success"
+        jsonResp.info = "order created"
+        jsonResp.data = order[0]
+        res.status(200).send(jsonResp);
+    })
+  .catch(err => {
+    console.log(err);
+    jsonResp.status = "failed"
+    jsonResp.info = "order not created"
+    res.status(400).send(jsonResp);
+  })
 });
 
 app.listen(port, () => {
