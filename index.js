@@ -324,6 +324,33 @@ app.post('/createOrder', (req, res) => {
   })
 });
 
+app.post('/getOrderByUser', (req, res) => {
+    var jsonResp = {}
+    var { email } = req.body
+    db.select()
+    .from('Order')
+    .where('email', '=', email)
+    .then(data => {
+      if(data.length == 0) {
+        jsonResp.status = "success"
+        jsonResp.info = "no order found"
+        res.status(200).send(jsonResp);  
+      } else {
+        jsonResp.status = "success"
+        jsonResp.info = "order found"
+        jsonResp.data = data
+        res.status(200).send(jsonResp);  
+      }
+  })
+  .catch(err => {
+      console.log(err);
+      jsonResp.status = "failed"
+      jsonResp.info = "no order found"
+      res.status(400).send(jsonResp);
+  })
+});
+
+
 app.listen(port, () => {
     console.log(`Server started on port`);
 });
