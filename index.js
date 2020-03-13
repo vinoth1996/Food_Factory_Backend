@@ -213,6 +213,59 @@ app.delete('/deleteIngredient', (req, res) => {
     var jsonResp = {}
 });
 
+app.post('/ingredientByVendor', (req, res) => {
+    var jsonResp = {};
+    const { vendorName } = req.body;
+    db.select()
+      .from('Ingredients')
+      .where('vendorName', '=', vendorName)
+      .then(data => {
+        if(data.length == 0) {
+          jsonResp.status = "success"
+          jsonResp.info = "no ingredient found"
+          res.status(200).send(jsonResp);  
+        } else {
+          jsonResp.status = "success"
+          jsonResp.info = "ingredient found"
+          jsonResp.data = data
+          res.status(200).send(jsonResp);  
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        jsonResp.status = "failed"
+        jsonResp.info = "no ingredient found"
+        res.status(400).send(jsonResp);
+    })
+
+});
+
+app.post('/ingredientByQuantity', (req, res) => {
+    var jsonResp = {};
+    db.select()
+      .from('Ingredients')
+      .where('availableQuantity', '<', 'thresholdQuantity')
+      .then(data => {
+        if(data.length == 0) {
+          jsonResp.status = "success"
+          jsonResp.info = "no ingredient found"
+          res.status(200).send(jsonResp);  
+        } else {
+          jsonResp.status = "success"
+          jsonResp.info = "ingredient found"
+          jsonResp.data = data
+          res.status(200).send(jsonResp);  
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        jsonResp.status = "failed"
+        jsonResp.info = "no ingredient found"
+        res.status(400).send(jsonResp);
+    })
+
+});
+
 app.listen(port, () => {
     console.log(`Server started on port`);
 });
