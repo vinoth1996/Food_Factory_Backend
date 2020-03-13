@@ -118,6 +118,11 @@ app.post('/login', (req, res) => {
     })
 });
 
+app.post('/updatePassword', (req, res) => {
+    var jsonResp = {}
+    
+});
+
 app.post('/updateUser', (req, res) => {
     var jsonResp = {}
     var { status, name } = req.body
