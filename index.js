@@ -129,8 +129,25 @@ app.post('/updateFood', (req, res) => {
     })
 });
 
-app.delete('/deleteFood', (req, res) => {
+app.post('/deleteFood', (req, res) => {
     var jsonResp = {}
+    const { lotNumber } = req.body;
+    db.delete()
+      .where('lotNumber', '=', lotNumber)
+      .into('Food')
+      .returning('*')
+      .then(data => {
+        jsonResp.status = "success"
+        jsonResp.info = "food deleted"
+        res.status(200).send(jsonResp);  
+      })
+      .catch(err => {
+        console.log(err);
+        jsonResp.status = "failed"
+        jsonResp.info = "food not deleted"
+        res.status(400).send(jsonResp);
+    })
+
 });
 
 app.post('/addIngredient', (req, res) => {
@@ -209,8 +226,24 @@ app.post('/updateIngredient', (req, res) => {
     })
 });
 
-app.delete('/deleteIngredient', (req, res) => {
+app.post('/deleteIngredient', (req, res) => {
     var jsonResp = {}
+    const { lotnumber } = req.body;
+    db.delete()
+      .where('lotnumber', '=', lotnumber)
+      .into('Ingredients')
+      .returning('*')
+      .then(data => {
+        jsonResp.status = "success"
+        jsonResp.info = "ingredient deleted"
+        res.status(200).send(jsonResp);  
+      })
+      .catch(err => {
+        console.log(err);
+        jsonResp.status = "failed"
+        jsonResp.info = "ingredient not deleted"
+        res.status(400).send(jsonResp);
+    })
 });
 
 app.post('/ingredientByVendor', (req, res) => {
@@ -263,6 +296,13 @@ app.post('/ingredientByQuantity', (req, res) => {
         jsonResp.info = "no ingredient found"
         res.status(400).send(jsonResp);
     })
+
+});
+
+app.post('/createOrder', (req, res) => {
+    var jsonResp = {}
+    const { status, orderDate, dateOfDelivery, modeOfTransport } = req.body;
+
 
 });
 
