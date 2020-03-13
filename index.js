@@ -40,21 +40,44 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-/**
- * @swagger
- * /testing:
- * get:
- *   description: testing api
- *   responses: 
- *     '200':
- *        description: success response 
- */
 app.get('/testing', (req, res) => {
     res.status(200).send("endpoint testing");
 });
 
+/**
+ * @swagger
+ * /signUp:
+ *   post:
+ *     tags:
+ *       - signUp
+ *     description: Create User
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: name
+ *         description: User name
+ *         in: path
+ *         type: string
+ *       - name: email
+ *         description: User email
+ *         in: path
+ *         type: string
+ *       - name: status
+ *         description: User status
+ *         in: path
+ *         type: string
+ *       - name: lastLoginAt
+ *         description: User last login
+ *         in: path
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: user created
+ *       400:
+ *         description: user not created
+ */
 app.post('/signUp', (req, res) => {
     var jsonResp = {}
     const { name, email, password, status, lastLoginAt } = req.body;
