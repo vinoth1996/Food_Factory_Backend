@@ -1,6 +1,8 @@
 const express = require('express');
 const knex = require('knex');
 const bcrypt = require('bcrypt');
+var randomString = require('randomstring');
+var nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -40,7 +42,7 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get('/testing', (req, res) => {
     res.status(200).send("endpoint testing");
@@ -56,21 +58,21 @@ app.get('/testing', (req, res) => {
  *     produces:
  *       - application/json
  *     parameters:
+ *       - in: body
  *       - name: name
  *         description: User name
- *         in: path
  *         type: string
  *       - name: email
  *         description: User email
- *         in: path
+ *         type: string
+ *       - name: password
+ *         description: User password
  *         type: string
  *       - name: status
  *         description: User status
- *         in: path
  *         type: string
  *       - name: lastLoginAt
  *         description: User last login
- *         in: path
  *         type: string
  *     responses:
  *       200:
@@ -78,23 +80,26 @@ app.get('/testing', (req, res) => {
  *       400:
  *         description: user not created
  */
+
 app.post('/signUp', (req, res) => {
-    var jsonResp = {}
-    const { name, email, password, status, lastLoginAt } = req.body;
-    const hash = bcrypt.hashSync(password, 10);
-    db('User').insert({
-        name: name,
-        email: email,
-        password: hash,
-        status: status,
-        createdAt: new Date(),
-        lastLoginAt: lastLoginAt
-    })
+  var jsonResp = {}
+  const { name, email, password, status, lastLoginAt } = req.body;
+  const hash = bcrypt.hashSync(password, 10);
+  db('User').insert({
+    name: name,
+    email: email,
+    password: hash,
+    status: status,
+    createdAt: new Date(),
+    lastLoginAt: lastLoginAt,
+    updatedAt: new Date()
+  })
   .returning('*')
   .then(user => {
     jsonResp.status = "success"
     jsonResp.info = "user created"
-    jsonResp.data = user[0]
+    jsonResp.email = user[0].email
+    jsonResp.name = user[0].name
     res.status(200).send(jsonResp);
   })
   .catch(err => {
@@ -104,6 +109,31 @@ app.post('/signUp', (req, res) => {
     res.status(400).send(jsonResp);
   }) 
 });
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     tags:
+ *       - login
+ *     description: User login
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: email
+ *         description: User email
+ *         in: path
+ *         type: string
+ *       - name: password
+ *         description: User password
+ *         in: path
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: login successful
+ *       401:
+ *         description: login invalid
+ */
 
 app.post('/login', (req, res) => {
     var jsonResp = {}
@@ -141,10 +171,102 @@ app.post('/login', (req, res) => {
     })
 });
 
-app.post('/updatePassword', (req, res) => {
-    var jsonResp = {}
-    
+app.post('/resetPassword', (req, res) => {
+  var jsonResp = {}
+  var { email } = req.body
+  db.select('*')
+  .from('User')
+  .where('email', '=', email)
+  .then(data => {
+    if(data.length == 0) {
+      jsonResp.status = "failed"
+      jsonResp.info = "User not found"
+      res.status(200).send(jsonResp);
+    } else {
+      // jsonResp.status = "success"
+      // jsonResp.info = "User found"
+      // jsonResp.email = data[0].email
+      var randomCode = randomString.generate();
+      
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'vinoth00658@gmail.com',
+          pass: '8925316650'
+        }        
+      })
+
+      var mailOptions = {
+        from: 'vinoth00658@gmail.com',
+        to: data[0].email,
+        subject: 'Food Factory - Temporary Password',
+        html: `<html><body>
+        <h3>Temporary Password : ${randomCode}</h3>
+        <h3> -- <br/>
+        Food Factory Team</h3>`
+      }
+
+      transporter.sendMail(mailOptions, function(err, info) {
+        if(err) {
+          console.log(err);
+          jsonResp.status = "failed";
+          jsonResp.info = "Error in sending Email!";
+          res.status(400).send(jsonResp);
+        } else {
+          db.update({
+            password: bcrypt.hashSync(randomCode, 10),
+            updatedAt: new Date()
+          })
+          .where('email', '=', data[0].email)
+          .into('User')
+          .then(data => {
+            jsonResp.status = "success"
+            jsonResp.info1 = "Email sent"
+            jsonResp.info2 ="password updated"
+            res.status(200).send(jsonResp);
+          })
+          .catch(err => {
+            console.log(err)
+            jsonResp.status = "failed"
+            jsonResp.info = "error while updating the password"
+            res.status(400).send(jsonResp);
+          })
+        }
+      })
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    jsonResp.status = "failed"
+    jsonResp.info = "cannot reset the password"
+    res.status(400).send(jsonResp);
+  })
 });
+
+/**
+ * @swagger
+ * /updateUser:
+ *   post:
+ *     tags:
+ *       - Update user details
+ *     description: User login
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: name
+ *         description: User name
+ *         in: path
+ *         type: string
+ *       - name: status
+ *         description: User status
+ *         in: path
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: user updated
+ *       400:
+ *         description: user not updated
+ */
 
 app.post('/updateUser', (req, res) => {
     var jsonResp = {}
