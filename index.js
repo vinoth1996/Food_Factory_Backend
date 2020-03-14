@@ -591,6 +591,25 @@ app.post('/createOrder', (req, res) => {
   })
 });
 
+app.post('/deleteOrder', (req, res) => {
+  var jsonResp = {}
+  var { orderNum, email } = req.body
+  db.delete()
+  .where('email', '=', email)
+  .where('orderNum', '=', orderNum)
+  .into('Order')
+  .then(data => {
+    jsonResp.status = "success"
+    jsonResp.info = "Order Deleted"
+    res.status(200).send(jsonResp);
+  })
+  .catch(err => {
+    jsonResp.status = "failed"
+    jsonResp.info = "order not deleted"
+    res.status(400).send(jsonResp);
+  }) 
+});
+
 app.post('/getOrderByUser', (req, res) => {
     var jsonResp = {}
     var { email } = req.body
