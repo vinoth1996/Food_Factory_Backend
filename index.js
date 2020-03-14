@@ -370,6 +370,32 @@ app.get('/allFood', (req, res) => {
     })  
 });
 
+app.post('/foodByCost', (req, res) => {
+  var jsonResp ={}
+  db('Food')
+  .select('*')
+  .where('costOfProduction', '>', db.ref('sellingCost'))
+  .then(data => {
+    console.log('data'+ data[0])
+    if(data.length == 0) {
+      jsonResp.status = "success"
+      jsonResp.info = "no foods found"
+      res.status(200).send(jsonResp);  
+    } else {
+      jsonResp.status = "success"
+      jsonResp.info = "food found"
+      jsonResp.data = data[0]
+      res.status(200).send(jsonResp);  
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    jsonResp.status = "failed"
+    jsonResp.info = "no foods found"
+    res.status(400).send(jsonResp);
+  })
+});
+
 app.post('/updateFood', (req, res) => {
     var jsonResp = {};
     const { costOfProduction, sellingCost, lotNumber } = req.body;
@@ -562,7 +588,6 @@ app.post('/ingredientByQuantity', (req, res) => {
         jsonResp.info = "no ingredient found"
         res.status(400).send(jsonResp);
     })
-
 });
 
 app.post('/createOrder', (req, res) => {
