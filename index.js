@@ -540,10 +540,11 @@ app.post('/ingredientByVendor', (req, res) => {
 
 app.post('/ingredientByQuantity', (req, res) => {
     var jsonResp = {};
-    db.select()
-      .from('Ingredients')
-      .where('availableQuantity', '<', 'thresholdQuantity')
+    db('Ingredients')
+      .select('*')
+      .where('availableQuantity', '<', db.ref('thresholdQuantity'))
       .then(data => {
+        console.log('data'+ data[0])
         if(data.length == 0) {
           jsonResp.status = "success"
           jsonResp.info = "no ingredient found"
@@ -551,7 +552,7 @@ app.post('/ingredientByQuantity', (req, res) => {
         } else {
           jsonResp.status = "success"
           jsonResp.info = "ingredient found"
-          jsonResp.data = data
+          jsonResp.data = data[0]
           res.status(200).send(jsonResp);  
         }
     })
