@@ -566,20 +566,20 @@ app.post('/ingredientByQuantity', (req, res) => {
 
 app.post('/createOrder', (req, res) => {
     var jsonResp = {}
-    const { food, quantity, email, status, orderDate, dateOfdelivery, modeOfTransport } = req.body;
+    const { food, quantity, email, status, dateOfdelivery, modeOfTransport } = req.body;
     db('Order').insert({
         food: food,
         quantity: quantity,
         email: email,
-        status: status,
-        orderDate: orderDate,
+        status: 'new order',
+        orderDate: new Date(),
         dateOfdelivery: dateOfdelivery,
         modeOfTransport: modeOfTransport
     })
     .returning('*')
     .then(order => {
         jsonResp.status = "success"
-        jsonResp.info = "order created"
+        jsonResp.info = "Order created"
         jsonResp.data = order[0]
         res.status(200).send(jsonResp);
     })
@@ -588,6 +588,29 @@ app.post('/createOrder', (req, res) => {
     jsonResp.status = "failed"
     jsonResp.info = "order not created"
     res.status(400).send(jsonResp);
+  })
+});
+
+app.post('/updateOrder', (req, res) => {
+  var jsonResp = {}
+  var { email, orderNum, status, quantity } = req.body
+  db.update({
+    status:status,
+    quantity: quantity
+  })
+  .where('email', '=', email)
+  .where('orderNum', '=', orderNum)
+  .into('Order')
+  .then(data => {
+    jsonResp.status = "success"
+    jsonResp.info = "Order updated"
+    jsonResp.data = data[0]
+    res.status(200).send(jsonResp);
+  })
+  .catch(err => {
+    jsonResp.status = "failed"
+    jsonResp.info = "Cannot update the order"
+    res.status(400).status(jsonResp);
   })
 });
 
