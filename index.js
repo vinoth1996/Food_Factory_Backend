@@ -192,7 +192,7 @@ app.post('/resetPassword', (req, res) => {
         service: 'gmail',
         auth: {
           user: 'vinoth00658@gmail.com',
-          pass: '8925316650'
+          pass: ''
         }        
       })
 
