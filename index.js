@@ -53,45 +53,45 @@ app.get('/testing', (req, res) => {
  * /signUp:
  *   post:
  *     tags:
- *       - signUp
- *     description: Create User
+ *       - User
+ *     description: User to create
+ *     consumes:
+ *       - application/json
  *     produces:
  *       - application/json
  *     parameters:
  *       - in: body
- *       - name: name
- *         description: User name
- *         type: string
- *       - name: email
- *         description: User email
- *         type: string
- *       - name: password
- *         description: User password
- *         type: string
- *       - name: status
- *         description: User status
- *         type: string
- *       - name: lastLoginAt
- *         description: User last login
- *         type: string
+ *         name: user
+ *         description: user to create
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            email:
+ *              type: string
+ *            password:
+ *              type: string 
+ *            lastLoginAt:
+ *              type: string
  *     responses:
  *       200:
- *         description: user created
+ *         description: Success
  *       400:
- *         description: user not created
+ *         description: Bad request
  */
 
 app.post('/signUp', (req, res) => {
   var jsonResp = {}
-  const { name, email, password, status, lastLoginAt } = req.body;
+  const { name, email, password } = req.body;
   const hash = bcrypt.hashSync(password, 10);
   db('User').insert({
     name: name,
     email: email,
     password: hash,
-    status: status,
+    status: 'active',
     createdAt: new Date(),
-    lastLoginAt: lastLoginAt,
+    lastLoginAt: new Date(),
     updatedAt: new Date()
   })
   .returning('*')
@@ -115,24 +115,30 @@ app.post('/signUp', (req, res) => {
  * /login:
  *   post:
  *     tags:
- *       - login
+ *       - User
  *     description: User login
+ *     consumes:
+ *       - application/json
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: email
- *         description: User email
- *         in: path
- *         type: string
- *       - name: password
- *         description: User password
- *         in: path
- *         type: string
+ *       - in: body
+ *         name: user
+ *         description: user to login
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            email:
+ *              type: string
  *     responses:
  *       200:
- *         description: login successful
- *       401:
- *         description: login invalid
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ *       403:
+ *         description: Forbidden
  */
 
 app.post('/login', (req, res) => {
@@ -155,21 +161,48 @@ app.post('/login', (req, res) => {
           console.log(err)
           jsonResp.status = "failed"
           jsonResp.info = "login invalid"
-          res.status(401).send(jsonResp)  
+          res.status(400).send(jsonResp)  
         })
       } else {
         jsonResp.status = "failed"
         jsonResp.info = "login invalid"
-        res.status(401).send(jsonResp)  
+        res.status(403).send(jsonResp)  
       }
     })
     .catch(err => {
       console.log(err)
       jsonResp.status = "failed"
       jsonResp.info = "login invalid"
-      res.status(401).send(jsonResp)  
+      res.status(400).send(jsonResp)  
     })
 });
+
+/**
+ * @swagger
+ * /resetPassword:
+ *   post:
+ *     tags:
+ *       - User
+ *     description: reset password
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: reset password
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 
 app.post('/resetPassword', (req, res) => {
   var jsonResp = {}
@@ -248,24 +281,28 @@ app.post('/resetPassword', (req, res) => {
  * /updateUser:
  *   post:
  *     tags:
- *       - Update user details
- *     description: User login
+ *       - User
+ *     description: update user
+ *     consumes:
+ *       - application/json
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: name
- *         description: User name
- *         in: path
- *         type: string
- *       - name: status
- *         description: User status
- *         in: path
- *         type: string
+ *       - in: body
+ *         name: user
+ *         description: update user
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            status:
+ *              type: string
  *     responses:
  *       200:
- *         description: user updated
+ *         description: Success
  *       400:
- *         description: user not updated
+ *         description: Bad request
  */
 
 app.post('/updateUser', (req, res) => {
@@ -294,6 +331,35 @@ app.post('/updateUser', (req, res) => {
 
 });
 
+/**
+ * @swagger
+ * /updateUserStatus:
+ *   post:
+ *     tags:
+ *       - User
+ *     description: update user status
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: update user status
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *            status:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/updateUserStatus', (req, res) => {
     var jsonResp = {}
     var { email, status } = req.body
@@ -318,6 +384,43 @@ app.post('/updateUserStatus', (req, res) => {
     })
 
 });
+
+/**
+ * @swagger
+ * /addFood:
+ *   post:
+ *     tags:
+ *       - Food
+ *     description: Add Food
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: add food
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            cuisine:
+ *              type: string
+ *            ingredients:
+ *              type: string 
+ *            lotNumber:
+ *              type: string
+ *            costOfProduction: 
+ *               type: integer
+ *            sellingCost:
+ *               type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 
 app.post('/addFood', (req, res) => {
     var jsonResp = {}
@@ -346,6 +449,21 @@ app.post('/addFood', (req, res) => {
   })
 });
 
+/**
+ * @swagger
+ * /allFood:
+ *   get:
+ *     tags:
+ *       - Food
+ *     description: get all foods which are present
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 app.get('/allFood', (req, res) => {
     var jsonResp = {}
     db.select()
@@ -370,6 +488,21 @@ app.get('/allFood', (req, res) => {
     })  
 });
 
+/**
+ * @swagger
+ * /foodByCost:
+ *   post:
+ *     tags:
+ *       - Food
+ *     description: get all foods whose costOfProduction higher than selling cost
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 app.post('/foodByCost', (req, res) => {
   var jsonResp ={}
   db('Food')
@@ -396,6 +529,37 @@ app.post('/foodByCost', (req, res) => {
   })
 });
 
+/**
+ * @swagger
+ * /updateFood:
+ *   post:
+ *     tags:
+ *       - Food
+ *     description: update food
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: update food
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotnumber:
+ *              type: string
+ *            costOfProduction:
+ *              type: integer
+ *            sellingCost:
+ *              type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/updateFood', (req, res) => {
     var jsonResp = {};
     const { costOfProduction, sellingCost, lotNumber } = req.body;
@@ -420,6 +584,33 @@ app.post('/updateFood', (req, res) => {
     })
 });
 
+/**
+ * @swagger
+ * /deleteFood:
+ *   post:
+ *     tags:
+ *       - Food
+ *     description: delete food
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: delete food
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotnumber:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/deleteFood', (req, res) => {
     var jsonResp = {}
     const { lotNumber } = req.body;
@@ -440,6 +631,45 @@ app.post('/deleteFood', (req, res) => {
     })
 
 });
+
+/**
+ * @swagger
+ * /addIngredient:
+ *   post:
+ *     tags:
+ *       - Ingredient
+ *     description: Add ingredient
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: add ingredient
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            availableQuantity:
+ *              type: string
+ *            thresholdQuantity:
+ *              type: string 
+ *            lotnumber:
+ *              type: string
+ *            price: 
+ *               type: integer
+ *            vendorName:
+ *               type: string
+ *            vendorEmail: 
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 
 app.post('/addIngredient', (req, res) => {
     var jsonResp = {}
@@ -468,6 +698,21 @@ app.post('/addIngredient', (req, res) => {
   })
 });
 
+/**
+ * @swagger
+ * /allIngredient:
+ *   get:
+ *     tags:
+ *       - Ingredient
+ *     description: get all ingredients which are present
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 app.get('/allIngredient', (req, res) => {
     var jsonResp = {}
     db.select()
@@ -491,6 +736,39 @@ app.get('/allIngredient', (req, res) => {
       res.status(400).send(jsonResp);
     })  
 });
+
+/**
+ * @swagger
+ * /updateIngredient:
+ *   post:
+ *     tags:
+ *       - Ingredient
+ *     description: update ingredient
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: ingredient
+ *         description: update ingredient
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotnumber:
+ *              type: string
+ *            price:
+ *              type: integer
+ *            thresholdQuantity:
+ *              type: integer
+ *            availableQuantity:
+ *              type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 
 app.post('/updateIngredient', (req, res) => {
     var jsonResp = {};
@@ -517,6 +795,33 @@ app.post('/updateIngredient', (req, res) => {
     })
 });
 
+/**
+ * @swagger
+ * /deleteIngredient:
+ *   post:
+ *     tags:
+ *       - Ingredient
+ *     description: delete ingredient
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: ingredient
+ *         description: delete ingredient
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotnumber:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/deleteIngredient', (req, res) => {
     var jsonResp = {}
     const { lotnumber } = req.body;
@@ -536,6 +841,33 @@ app.post('/deleteIngredient', (req, res) => {
         res.status(400).send(jsonResp);
     })
 });
+
+/**
+ * @swagger
+ * /ingredientByVendor:
+ *   post:
+ *     tags:
+ *       - Ingredient
+ *     description: get all ingredients provided by same vendor
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: get ingredient by vendor
+ *         schema:
+ *            type: object
+ *         properties:
+ *            vendorName:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 
 app.post('/ingredientByVendor', (req, res) => {
     var jsonResp = {};
@@ -564,6 +896,21 @@ app.post('/ingredientByVendor', (req, res) => {
 
 });
 
+/**
+ * @swagger
+ * /ingredientByQuantity:
+ *   post:
+ *     tags:
+ *       - Ingredient
+ *     description: get all ingredients whose available quantity is less than the threshold quantity
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 app.post('/ingredientByQuantity', (req, res) => {
     var jsonResp = {};
     db('Ingredients')
@@ -590,9 +937,44 @@ app.post('/ingredientByQuantity', (req, res) => {
     })
 });
 
+/**
+ * @swagger
+ * /createOrder:
+ *   post:
+ *     tags:
+ *       - Order
+ *     description: User to create order
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: order
+ *         description: user to create order
+ *         schema:
+ *            type: object
+ *         properties:
+ *            food:
+ *              type: string
+ *            Quantity:
+ *              type: integer
+ *            email:
+ *              type: string
+ *            modeOfTransport:
+ *              type: string 
+ *            dateOfdelivery:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/createOrder', (req, res) => {
     var jsonResp = {}
-    const { food, quantity, email, status, dateOfdelivery, modeOfTransport } = req.body;
+    const { food, quantity, email, dateOfdelivery, modeOfTransport } = req.body;
     db('Order').insert({
         food: food,
         quantity: quantity,
@@ -617,6 +999,39 @@ app.post('/createOrder', (req, res) => {
   })
 });
 
+/**
+ * @swagger
+ * /updateOrder:
+ *   post:
+ *     tags:
+ *       - Order
+ *     description: update order
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: order
+ *         description: update order
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *            orderNum:
+ *              type: integer
+ *            status:
+ *              type: string
+ *            quantity:
+ *              type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/updateOrder', (req, res) => {
   var jsonResp = {}
   var { email, orderNum, status, quantity } = req.body
@@ -640,6 +1055,35 @@ app.post('/updateOrder', (req, res) => {
   })
 });
 
+/**
+ * @swagger
+ * /deleteOrder:
+ *   post:
+ *     tags:
+ *       - Order
+ *     description: delete order
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: order
+ *         description: delete order
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *            orderNum:
+ *              type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
+
 app.post('/deleteOrder', (req, res) => {
   var jsonResp = {}
   var { orderNum, email } = req.body
@@ -658,6 +1102,33 @@ app.post('/deleteOrder', (req, res) => {
     res.status(400).send(jsonResp);
   }) 
 });
+
+/**
+ * @swagger
+ * /getOrderByUser:
+ *   post:
+ *     tags:
+ *       - Order
+ *     description: get order by user
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: order
+ *         description: get order by user
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ */
 
 app.post('/getOrderByUser', (req, res) => {
     var jsonResp = {}
