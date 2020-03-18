@@ -44,7 +44,9 @@ router.post('/', function(req, res) {
     }, function(err, exists) {
         if(err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if(!exists) {
             var hash = bcrypt.hashSync(body.password, 10);
@@ -59,14 +61,18 @@ router.post('/', function(req, res) {
             }], function (err, items) {
                 if(err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 jsonResp.status = "success"
-                jsonResp.info = "user created"
+                jsonResp.message = "user created"
                 req.models.User.get(items[0].id, function (err, user) {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     //clearing password field while send response
                     user.password = '';
@@ -76,7 +82,7 @@ router.post('/', function(req, res) {
             })
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "User Already Exists!";
+            jsonResp.message = "User Already Exists!";
             res.send(JSON.stringify(jsonResp));
         }
     })
@@ -92,7 +98,9 @@ router.post('/auth', function (req, res) {
     }, function (err, exists) {
         if (err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if (exists) {
             req.models.User.find({
@@ -100,14 +108,16 @@ router.post('/auth', function (req, res) {
             }, 1, function (err, user) {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 var tempUser = user[0];
                 console.log(tempUser.password + " == " + body.password);
                 //if(tempUser.password == body.password){
                 if (bcrypt.compareSync(body.password, tempUser.password)) {
                     jsonResp.status = "success";
-                    jsonResp.info = "Login Success";
+                    jsonResp.message = "Login Success";
                     tempUser.password = '';
                     jsonResp.data = tempUser;
                     var token = jwt.sign({
@@ -119,13 +129,13 @@ router.post('/auth', function (req, res) {
                     res.send(JSON.stringify(jsonResp));
                 } else {
                     jsonResp.status = "failed";
-                    jsonResp.info = "Wrong Password";
+                    jsonResp.message = "Wrong Password";
                     res.send(JSON.stringify(jsonResp));
                 }
             });
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "User not Found!";
+            jsonResp.message = "User not Found!";
             res.send(JSON.stringify(jsonResp));
         }
     });
@@ -140,7 +150,9 @@ router.put('/', verifyToken, function (req, res) {
     }, function (err, exists) {
         if (err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if (exists) {
             req.models.User.find({
@@ -148,7 +160,9 @@ router.put('/', verifyToken, function (req, res) {
             }, 1, function (err, data) {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 var hashedPassword = bcrypt.hashSync(body.password, 10);
                 data[0].save({
@@ -159,11 +173,13 @@ router.put('/', verifyToken, function (req, res) {
                 }, function (err) {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     console.log("updated!");
                     jsonResp.status = "success";
-                    jsonResp.info = "User Updated!";
+                    jsonResp.message = "User Updated!";
                     data[0].password = '';
                     jsonResp.data = data[0];
                     res.send(JSON.stringify(jsonResp));
@@ -171,7 +187,7 @@ router.put('/', verifyToken, function (req, res) {
             });
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "Cannot edit a non existing record!";
+            jsonResp.message = "Cannot edit a non existing record!";
             res.send(JSON.stringify(jsonResp));
         }
     });
@@ -186,7 +202,9 @@ router.put('/status', verifyToken, function(req, res) {
     }, function(err, exists) {
         if(err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if (exists) {
             req.models.User.find({
@@ -194,7 +212,9 @@ router.put('/status', verifyToken, function(req, res) {
             }, 1, function (err, data) {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 data[0].save({
                     status: body.status,
@@ -202,11 +222,13 @@ router.put('/status', verifyToken, function(req, res) {
                 }, function (err) {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     console.log("updated!");
                     jsonResp.status = "success";
-                    jsonResp.info = "Status Updated!";
+                    jsonResp.message = "Status Updated!";
                     data[0].password = '';
                     jsonResp.data = data[0];
                     res.send(JSON.stringify(jsonResp));
@@ -214,7 +236,7 @@ router.put('/status', verifyToken, function(req, res) {
             });
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "Cannot edit a non existing record!";
+            jsonResp.message = "Cannot edit a non existing record!";
             res.send(JSON.stringify(jsonResp));
         }    
     })
@@ -229,7 +251,9 @@ router.delete('/', verifyToken, function (req, res) {
     }, function (err, exists) {
         if (err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if (exists) {
             req.models.User.find({
@@ -237,22 +261,26 @@ router.delete('/', verifyToken, function (req, res) {
             }, 1, function (err, data) {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));
                 }
                 data[0].remove(function (err) {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     console.log("removed!");
                     jsonResp.status = "success";
-                    jsonResp.info = "User Deleted!";
+                    jsonResp.message = "User Deleted!";
                     res.send(JSON.stringify(jsonResp));
                 });
             });
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "Cannot delete a non existing record!";
+            jsonResp.message = "Cannot delete a non existing record!";
             res.send(JSON.stringify(jsonResp));
         }
     });
@@ -267,7 +295,9 @@ router.post('/resetPassword', function(req, res) {
     }, function(err, exists) {
         if(err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         } 
         if(exists) {
             req.models.User.find({
@@ -275,10 +305,12 @@ router.post('/resetPassword', function(req, res) {
             }, 1, function (err, userData) {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 jsonResp.status = "success";
-                jsonResp.info1 = "User Found!";
+                jsonResp.message1 = "User Found!";
                 var randomCode = randomString.generate();
       
                 var transporter = nodemailer.createTransport({
@@ -303,7 +335,7 @@ router.post('/resetPassword', function(req, res) {
                     if (error) {
                         console.log(error);
                         jsonResp.status = "failed";
-                        jsonResp.info = "Error in sending Email!";
+                        jsonResp.message = "Error in sending Email!";
                         res.send(JSON.stringify(jsonResp));
                     } else {
                         userData[0].save({
@@ -311,20 +343,22 @@ router.post('/resetPassword', function(req, res) {
                         }, function (err) {
                             if (err) {
                                 console.log(err);
-                                res.sendStatus(500);
+                                jsonResp.status = "failed"
+                                jsonResp.message = "Internal server error"
+                                res.status(500).send(JSON.stringify(jsonResp));                    
                             }
                         });
                         console.log('Email sent: ' + info.response);
                     }
                 })
                 jsonResp.status = "success"
-                jsonResp.info2 = "Email sent"
-                jsonResp.info3 ="Password updated"
+                jsonResp.message2 = "Email sent"
+                jsonResp.message3 ="Password updated"
                 res.send(JSON.stringify(jsonResp));    
             })    
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "User not Found!";
+            jsonResp.message = "User not Found!";
             res.send(JSON.stringify(jsonResp));
         }
     })    

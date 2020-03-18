@@ -9,7 +9,9 @@ router.post('/', function(req, res) {
     }, function(err, exists) {
         if(err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if(exists) {
             req.models.Order.create([{
@@ -24,14 +26,18 @@ router.post('/', function(req, res) {
             }], function (err, items) {
                 if(err) {       
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 jsonResp.status = "success"
-                jsonResp.info = "Food ordered successfully"
+                jsonResp.message = "Food ordered successfully"
                 req.models.Order.get(items[0].id, function (err, order) {
                     if (err) {            
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     jsonResp.data = order;
                     res.send(JSON.stringify(jsonResp));
@@ -39,7 +45,7 @@ router.post('/', function(req, res) {
             })            
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "User not Exists!";
+            jsonResp.message = "User not Exists!";
             res.send(JSON.stringify(jsonResp));
         }
     })

@@ -9,7 +9,9 @@ router.post('/', (req, res) => {
     }, function(err, exists) {
         if(err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if(!exists) {
             req.models.Ingredients.create([{
@@ -23,14 +25,18 @@ router.post('/', (req, res) => {
             }], function (err, items) {
                 if(err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 jsonResp.status = "success"
-                jsonResp.info = "Ingredient created"
+                jsonResp.message = "Ingredient created"
                 req.models.Ingredients.get(items[0].id, function (err, ingredient) {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     jsonResp.data = ingredient;
                     res.send(JSON.stringify(jsonResp));
@@ -38,7 +44,7 @@ router.post('/', (req, res) => {
             })
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "Ingredient Already Exists!";
+            jsonResp.message = "Ingredient Already Exists!";
             res.send(JSON.stringify(jsonResp));
         }
     })
@@ -51,16 +57,18 @@ router.get('/', function(req, res) {
     }, function(err, data) {
         if(err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if(data.length != 0) {
             jsonResp.status = "success"
-            jsonResp.info = "Ingredients found"
+            jsonResp.message = "Ingredients found"
             jsonResp.data = data
             res.send(JSON.stringify(jsonResp));
         } else {
             jsonResp.status = "success"
-            jsonResp.info = "No Ingredients found"
+            jsonResp.message = "No Ingredients found"
             res.send(JSON.stringify(jsonResp));
         }
     })
@@ -75,7 +83,9 @@ router.delete('/', function(req, res) {
     }, function (err, exists) {
         if (err) {
             console.log(err);
-            res.sendStatus(500);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
         }
         if (exists) {
             req.models.Ingredients.find({
@@ -83,22 +93,26 @@ router.delete('/', function(req, res) {
             }, 1, function (err, data) {
                 if (err) {
                     console.log(err);
-                    res.sendStatus(500);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
                 }
                 data[0].remove(function (err) {
                     if (err) {
                         console.log(err);
-                        res.sendStatus(500);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
                     }
                     console.log("removed!");
                     jsonResp.status = "success";
-                    jsonResp.info = "Ingredient Deleted!";
+                    jsonResp.message = "Ingredient Deleted!";
                     res.send(JSON.stringify(jsonResp));
                 });
             });
         } else {
             jsonResp.status = "failed";
-            jsonResp.info = "Cannot delete a non existing ingredient!";
+            jsonResp.message = "Cannot delete a non existing ingredient!";
             res.send(JSON.stringify(jsonResp));
         }
     });
