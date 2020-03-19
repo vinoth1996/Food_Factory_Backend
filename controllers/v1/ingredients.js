@@ -118,4 +118,29 @@ router.delete('/', function(req, res) {
     });
 });
 
+router.get('/byQuantity', function(req, res) {
+    var jsonResp = {};
+    res.set('Content-Type', 'text/plain');
+    req.models.Ingredients.find({
+        availableQuantity: orm.lt(thresholdQuantity)
+    }, function(err, data) {
+        if(err) {
+            console.log(err);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
+        }
+        if(data.length != 0) {
+            jsonResp.status = "success"
+            jsonResp.message = "Ingredients found"
+            jsonResp.data = data
+            res.send(JSON.stringify(jsonResp));
+        } else {
+            jsonResp.status = "success"
+            jsonResp.message = "No Ingredients found"
+            res.send(JSON.stringify(jsonResp));
+        }
+    })
+});
+
 module.exports = router

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router()
+const orm = require('orm');
 
 router.post('/', function(req, res) {
     const body = req.body;
@@ -120,6 +121,32 @@ router.delete('/', function(req, res) {
             res.send(JSON.stringify(jsonResp));
         }
     });
+});
+
+router.get('/byCost', function(req, res) {
+    var jsonResp = {};
+    res.set('Content-Type', 'text/plain');
+    req.models.Food.find({
+        costOfProduction: orm.lt(req.models.Food.sellingCost)
+    }, function(err, data) {
+        if(err) {
+            console.log(err);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
+        }
+        if(data.length != 0) {
+            jsonResp.status = "success"
+            jsonResp.message = "Foods found"
+            jsonResp.data = data
+            res.send(JSON.stringify(jsonResp));
+        } else {
+            console.log("foods:" + data)
+            jsonResp.status = "success"
+            jsonResp.message = "No Foods found"
+            res.send(JSON.stringify(jsonResp));
+        }
+    })
 });
 
 module.exports = router
