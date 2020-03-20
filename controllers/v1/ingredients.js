@@ -1,8 +1,50 @@
 const express = require('express');
 const router = express.Router()
-const orm = require('orm')
+var config = require('../../config/dbConfig')
+var pg = require('pg')
 
-router.post('/', (req, res) => {
+var client = new pg.Client(config.getPgSqlConnectionString())
+client.connect();
+
+/**
+ * @swagger
+ * /createIngredient:
+ *   post:
+ *     tags:
+ *       - Ingredient
+ *     description: Add ingredient
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: ingredient
+ *         description: add ingredient
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            availableQuantity:
+ *              type: string
+ *            thresholdQuantity:
+ *              type: string 
+ *            lotNumber:
+ *              type: string
+ *            price: 
+ *               type: integer
+ *            vendorName:
+ *               type: string
+ *            vendorEmail: 
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/createIngredient', (req, res) => {
     const body = req.body;
     var jsonResp = {}
     req.models.Ingredients.exists({
@@ -51,7 +93,22 @@ router.post('/', (req, res) => {
     })
 });
 
-router.get('/', function(req, res) {
+/**
+ * @swagger
+ * /getAllIngredients:
+ *   get:
+ *     tags:
+ *       - Ingredient
+ *     description: get all ingredients which are present
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/getAllIngredients', function(req, res) {
     var jsonResp = {}
     req.models.Ingredients.find({
         
@@ -75,7 +132,22 @@ router.get('/', function(req, res) {
     })
 });
 
-router.delete('/', function(req, res) {
+/**
+ * @swagger
+ * /deleteAllIngredients:
+ *   delete:
+ *     tags:
+ *       - Ingredient
+ *     description: delete all ingredients which are present
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.delete('/deleteAllIngredients', function(req, res) {
     const body = req.body;
     var jsonResp = {};
     res.set('Content-Type', 'text/plain');
@@ -119,11 +191,26 @@ router.delete('/', function(req, res) {
     });
 });
 
-router.get('/byQuantity', function(req, res) {
+/**
+ * @swagger
+ * /ingredientsByQuantity:
+ *   get:
+ *     tags:
+ *       - Ingredient
+ *     description: get all ingredients whose availableQuantity lesser than thresholdQuantity
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/ingredientsByQuantity', function(req, res) {
     var jsonResp = {};
     res.set('Content-Type', 'text/plain');
     req.models.Ingredients.find({
-        availableQuantity: orm.lt(thresholdQuantity)
+        // availableQuantity: orm.lt(thresholdQuantity)
     }, function(err, data) {
         if(err) {
             console.log(err);
@@ -132,10 +219,20 @@ router.get('/byQuantity', function(req, res) {
             res.status(500).send(JSON.stringify(jsonResp));
         }
         if(data.length != 0) {
-            jsonResp.status = "success"
-            jsonResp.message = "Ingredients found"
-            jsonResp.data = data
-            res.send(JSON.stringify(jsonResp));
+            var sql = 'select *from "ingredients" where "availableQuantity" < "thresholdQuantity"';
+            client.query(sql, (err, ingredients)=> {
+                if(err) {
+                    console.log(err);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.send(JSON.stringify(jsonResp));        
+                } else {
+                    jsonResp.status = "success"
+                    jsonResp.message = "Ingredients found"
+                    jsonResp.data = ingredients.rows
+                    res.send(JSON.stringify(jsonResp));        
+                }
+            })    
         } else {
             jsonResp.status = "success"
             jsonResp.message = "No Ingredients found"

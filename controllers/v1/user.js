@@ -8,7 +8,7 @@ var verifyToken = require('../../verifyToken');
 var key = require('../../config/secretKey');
 /**
  * @swagger
- * /signUp:
+ * /:
  *   post:
  *     tags:
  *       - User
@@ -33,8 +33,8 @@ var key = require('../../config/secretKey');
  *     responses:
  *       200:
  *         description: Success
- *       400:
- *         description: Bad request
+ *       500:
+ *         description: Internal server error
 */
 router.post('/', function(req, res) {
     const body = req.body;
@@ -88,6 +88,34 @@ router.post('/', function(req, res) {
     })
 });
 
+/**
+ * @swagger
+ * /auth:
+ *   post:
+ *     tags:
+ *       - User
+ *     description: User login
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: user to login
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            email:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/auth', function (req, res) {
     const body = req.body;
     var jsonResp = {};
@@ -141,6 +169,36 @@ router.post('/auth', function (req, res) {
     });
 });
 
+/**
+ * @swagger
+ * /:
+ *   put:
+ *     tags:
+ *       - User
+ *     description: update user
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: update user
+ *         schema:
+ *            type: object
+ *         properties:
+ *            name:
+ *              type: string
+ *            email:
+ *              type: string
+ *            password:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
 router.put('/', verifyToken, function (req, res) {
     const body = req.body;
     var jsonResp = {};
@@ -193,6 +251,34 @@ router.put('/', verifyToken, function (req, res) {
     });
 });
 
+/**
+ * @swagger
+ * /status:
+ *   put:
+ *     tags:
+ *       - User
+ *     description: update user status
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: update user status
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *            status:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
 router.put('/status', verifyToken, function(req, res) {
     const body = req.body;
     var jsonResp = {};
@@ -242,6 +328,32 @@ router.put('/status', verifyToken, function(req, res) {
     })
 });
 
+/**
+ * @swagger
+ * /:
+ *   delete:
+ *     tags:
+ *       - User
+ *     description: delete user
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: delete user
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotNumber:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
 router.delete('/', verifyToken, function (req, res) {
     const body = req.body;
     var jsonResp = {};
@@ -286,6 +398,32 @@ router.delete('/', verifyToken, function (req, res) {
     });
 });
 
+/**
+ * @swagger
+ * /resetPassword:
+ *   post:
+ *     tags:
+ *       - User
+ *     description: reset password
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: reset password
+ *         schema:
+ *            type: object
+ *         properties:
+ *            email:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/resetPassword', function(req, res) {
     const body = req.body;
     var jsonResp = {};

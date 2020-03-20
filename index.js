@@ -10,44 +10,14 @@ var pg = require('pg')
 var client = new pg.Client(config.getPgSqlConnectionString())
 client.connect()
 
-// const db = knex({
-//     client: 'pg',
-//     connection: {
-//       host: '127.0.0.1',
-//       user: 'postgres',
-//       password: 'vinoth',
-//       database: 'food_factory'
-//     }
-// });
-
-client.query('SELECT * FROM public."User"', (err, res)=>{
+client.query('SELECT * FROM public."user"', (err, res)=>{
   console.log(res)
   client.end()
 })
 
-// db.select('*').from('Food').then(data => {
-//     console.log(data);
-// })
-
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-
-// const swaggerOptions = {
-//     swaggerDefinition: {
-//         info: {
-//             title: 'Food Factory',
-//             description : 'Food Factory API',
-//             contact: {
-//                 name: 'developer'
-//             },
-//             servers: ['http://localhost:3000']
-//         }
-//     },
-//     apis: ["index.js"]
-// };
-
-// const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/testing', (req, res) => {
