@@ -127,7 +127,7 @@ router.get('/byCost', function(req, res) {
     var jsonResp = {};
     res.set('Content-Type', 'text/plain');
     req.models.Food.find({
-        costOfProduction: orm.lt(req.models.Food.sellingCost)
+        costOfProduction: orm.gt(req.models.Food.find(sellingCost))
     }, function(err, data) {
         if(err) {
             console.log(err);

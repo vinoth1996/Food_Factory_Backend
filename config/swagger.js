@@ -11,7 +11,7 @@ const swaggerOptions = {
             servers: ['http://localhost:3000']
         }
     },
-    apis: ["./controllers/**/v1/**/*.js"]
+    apis: ["./controllers/v1/*.js"]
 };
 
 module.exports = swaggerJsDoc(swaggerOptions)

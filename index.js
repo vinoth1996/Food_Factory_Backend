@@ -1,5 +1,4 @@
 const express = require('express');
-const knex = require('knex');
 const orm = require('orm');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
@@ -57,7 +56,7 @@ app.get('/testing', (req, res) => {
 
 app.use(orm.express(config.getPgSqlConnectionString(), {
   define: function (db, models) {
-    models.User = db.define("User", {
+    models.User = db.define("user", {
       name: String,
       email: String,
       password: String,
@@ -66,7 +65,7 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
       createdAt: String,
       updatedAt: String
     });
-    models.Food = db.define("Food", {
+    models.Food = db.define("food", {
       name: String,
       cuisine: String,
       ingredients: String,
@@ -75,7 +74,11 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
       sellingCost: Number,
       createdAt: String
     });
-    models.Ingredients = db.define("Ingredients", {
+    models.FoodRel = db.define("foodRel", {
+      foodLotNum: String,
+      ingredientsLotNum: String
+    });
+    models.Ingredients = db.define("ingredients", {
       name: String,
       lotNumber: String,
       vendorName: String,
@@ -84,7 +87,7 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
       availableQuantity: Number,
       thresholdQuantity: Number
     });
-    models.Order = db.define("Order", {
+    models.Order = db.define("order", {
       email: String,
       food: String,
       status: String,
@@ -93,6 +96,12 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
       orderDate: String,
       orderNum: String,
       quantity: Number
+    });
+    models.OrderRel = db.define("orderRel", {
+      orderNum: Number,
+      foodLotNum: String,
+      quantity: Number,
+      amount: Number
     });    
   }
 }));
