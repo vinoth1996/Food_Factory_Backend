@@ -160,6 +160,36 @@ router.get('/getAllFoods', function(req, res) {
     })
 });
 
+/**
+ * @swagger
+ * /updateFood:
+ *   put:
+ *     tags:
+ *       - Food
+ *     description: update food
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: update food
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotnumber:
+ *              type: string
+ *            costOfProduction:
+ *              type: integer
+ *            sellingCost:
+ *              type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error 
+ */
 router.put('/', function(req, res) {
 
 });

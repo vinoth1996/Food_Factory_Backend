@@ -134,6 +134,86 @@ router.get('/getAllIngredients', function(req, res) {
 
 /**
  * @swagger
+ * /updateIngredient:
+ *   put:
+ *     tags:
+ *       - Ingredient
+ *     description: update ingredient
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: ingredient
+ *         description: update ingredient
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotNumber:
+ *              type: string
+ *            price:
+ *              type: integer
+ *            thresholdQuantity:
+ *              type: integer
+ *            availableQuantity:
+ *              type: integer
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error 
+ */
+router.put('/updateIngredient', (req, res) => {
+    const body = req.body;
+    var jsonResp = {}
+    res.set('Content-Type', 'text/plain');
+    req.models.Ingredients.exists({
+        lotNumber: body.lotNumber
+    }, function(err, exists) { 
+        if(err) {
+            console.log(err);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
+        }
+        if(exists) {
+            req.models.Ingredients.find({
+                lotNumber: body.lotNumber
+            }, function(err, data) {
+                if(err) {
+                    console.log(err);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
+                }
+                data[0].save({
+                    price: body.price,
+                    availableQuantity: body.availableQuantity,
+                    thresholdQuantity: body.thresholdQuantity
+                }, function(err) {
+                    if(err) {
+                        console.log(err);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
+                    }
+                    jsonResp.status = "success"
+                    jsonResp.message = "Ingredient Updated!";
+                    jsonResp.data = data[0]
+                    res.send(JSON.stringify(jsonResp)); 
+                }) 
+            })
+        } else {
+            jsonResp.status = "failed"
+            jsonResp.message = "Ingredient not found"
+            res.status(500).send(JSON.stringify(jsonResp));            
+        }
+    })
+});
+
+/**
+ * @swagger
  * /deleteAllIngredients:
  *   delete:
  *     tags:
