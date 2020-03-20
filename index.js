@@ -11,7 +11,7 @@ var client = new pg.Client(config.getPgSqlConnectionString())
 client.connect()
 
 client.query('SELECT * FROM public."user"', (err, res)=>{
-  console.log(res)
+  // console.log(res)
   client.end()
 })
 
@@ -38,7 +38,6 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
     models.Food = db.define("food", {
       name: String,
       cuisine: String,
-      ingredients: String,
       lotNumber: String,
       costOfProduction: Number,
       sellingCost: Number,
@@ -59,13 +58,12 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
     });
     models.Order = db.define("order", {
       email: String,
-      food: String,
       status: String,
       modeOfTransport: String,
       dateOfDelivery: String,
       orderDate: String,
-      orderNum: String,
-      quantity: Number
+      costPrice: Number,
+      sellingPrice: Number
     });
     models.OrderRel = db.define("orderRel", {
       orderNum: Number,

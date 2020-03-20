@@ -58,8 +58,7 @@ router.post('/createFood', function(req, res) {
             req.models.Food.create([{
                 name: body.name,
                 createdAt: new Date(), 
-                cuisine: body.cuisine, 
-                ingredients: body.ingredients, 
+                cuisine: body.cuisine,  
                 lotNumber: body.lotNumber, 
                 costOfProduction: body.costOfProduction, 
                 sellingCost: body.sellingCost
@@ -70,6 +69,9 @@ router.post('/createFood', function(req, res) {
                     jsonResp.message = "Internal server error"
                     res.status(500).send(JSON.stringify(jsonResp));        
                 } else {
+                    // for(i=0; body.ingredients.length; i++) {
+
+                    // }
                     req.models.FoodRel.exists({
                         foodLotNum: body.lotNumber,
                         ingredientsLotNum: body.ingredients
@@ -147,9 +149,9 @@ router.get('/getAllFoods', function(req, res) {
         if(data.length != 0) {
             jsonResp.status = "success"
             jsonResp.message = "Foods found"
-            for(i=0; i < data.length; i++) {
-                data[i].ingredients  =''
-            }
+            // for(i=0; i < data.length; i++) {
+            //     data[i].ingredients  =''
+            // }
             jsonResp.data = data
             res.send(JSON.stringify(jsonResp));
         } else {
@@ -178,7 +180,7 @@ router.get('/getAllFoods', function(req, res) {
  *         schema:
  *            type: object
  *         properties:
- *            lotnumber:
+ *            lotNumber:
  *              type: string
  *            costOfProduction:
  *              type: integer
