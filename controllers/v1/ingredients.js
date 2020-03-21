@@ -167,7 +167,6 @@ router.get('/getAllIngredients', function(req, res) {
 router.put('/updateIngredient', (req, res) => {
     const body = req.body;
     var jsonResp = {}
-    res.set('Content-Type', 'text/plain');
     req.models.Ingredients.exists({
         lotNumber: body.lotNumber
     }, function(err, exists) { 
@@ -230,7 +229,6 @@ router.put('/updateIngredient', (req, res) => {
 router.delete('/deleteAllIngredients', function(req, res) {
     const body = req.body;
     var jsonResp = {};
-    res.set('Content-Type', 'text/plain');
     req.models.Ingredients.exists({
         lotNumber: body.lotNumber
     }, function (err, exists) {
@@ -288,7 +286,6 @@ router.delete('/deleteAllIngredients', function(req, res) {
  */
 router.get('/ingredientsByQuantity', function(req, res) {
     var jsonResp = {};
-    res.set('Content-Type', 'text/plain');
     req.models.Ingredients.find({
         // availableQuantity: orm.lt(thresholdQuantity)
     }, function(err, data) {

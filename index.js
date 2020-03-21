@@ -57,6 +57,7 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
       thresholdQuantity: Number
     });
     models.Order = db.define("order", {
+      // id: Number,
       email: String,
       status: String,
       modeOfTransport: String,

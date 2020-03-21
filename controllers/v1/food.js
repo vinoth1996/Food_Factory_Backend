@@ -192,8 +192,50 @@ router.get('/getAllFoods', function(req, res) {
  *       500:
  *         description: Internal server error 
  */
-router.put('/', function(req, res) {
-
+router.put('/updateFood', function(req, res) {
+    const body = req.body;
+    var jsonResp = {}
+    req.models.Food.exists({
+        lotNumber: body.lotNumber
+    }, function(err, exists) { 
+        if(err) {
+            console.log(err);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
+        }
+        if(exists) {
+            req.models.Food.find({
+                lotNumber: body.lotNumber
+            }, function(err, data) {
+                if(err) {
+                    console.log(err);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.status(500).send(JSON.stringify(jsonResp));        
+                }
+                data[0].save({
+                    costOfProduction: body.costOfProduction,
+                    sellingCost: body.sellingCost
+                }, function(err) {
+                    if(err) {
+                        console.log(err);
+                        jsonResp.status = "failed"
+                        jsonResp.message = "Internal server error"
+                        res.status(500).send(JSON.stringify(jsonResp));            
+                    }
+                    jsonResp.status = "success"
+                    jsonResp.message = "Food Updated!";
+                    jsonResp.data = data[0]
+                    res.send(JSON.stringify(jsonResp)); 
+                }) 
+            })
+        } else {
+            jsonResp.status = "failed"
+            jsonResp.message = "Food not found"
+            res.status(500).send(JSON.stringify(jsonResp));            
+        }
+    })
 });
 
 /**
