@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router()
 
-router.post('/', function(req, res) {
+router.post('/createOrder', function(req, res) {
     const body = req.body;
     var jsonResp = {}
     req.models.Food.exists({
@@ -37,8 +37,8 @@ router.post('/', function(req, res) {
                             req.models.Order.create([{
                                 quantity: body.quantity,
                                 email: body.email,
-                                costPrice: food[0].costOfProduction,
-                                sellingPrice: food[0].sellingCost,
+                                costPrice: food[0].sellingCost,
+                                sellingPrice: food[0].sellingCost + 10,
                                 status: 'new order',
                                 orderDate: new Date(),
                                 dateOfDelivery: body.dateOfDelivery,
@@ -50,12 +50,12 @@ router.post('/', function(req, res) {
                                     jsonResp.message = "Internal server error"
                                     res.status(500).send(JSON.stringify(jsonResp));                                        
                                 } else {
-                                    jsonResp.data = data[0].orderNum
+                                    jsonResp.data = data[0]
                                     req.models.OrderRel.create([{
-                                        orderNum: data[0].orderNum,
+                                        orderNum: data[0].id,
                                         foodLotNum: body.lotNumber,
                                         quantity: body.quantity,
-                                        amount: (food[0].sellingCost) * (body.quantity)
+                                        amount: (data[0].sellingPrice) * (body.quantity)
                                     }], function(err, items) {
                                         if(err) {
                                             console.log(err);
@@ -68,7 +68,7 @@ router.post('/', function(req, res) {
                                             jsonResp.message2 = "Values inserted in orderRel"
                                             res.send(JSON.stringify(jsonResp));
                                         }
-                                    })
+                                    })        
                                 }
                             })        
                         } else {
