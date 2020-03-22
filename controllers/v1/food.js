@@ -313,7 +313,7 @@ router.put('/updateFood', function(req, res) {
 
 /**
  * @swagger
- * /foodFactory/api/food/deleteAllFoods:
+ * /foodFactory/api/food/deleteFood:
  *   delete:
  *     tags:
  *       - Food
@@ -337,7 +337,7 @@ router.put('/updateFood', function(req, res) {
  *       500:
  *         description: Internal server error
  */
-router.delete('/deleteAllFoods', function(req, res) {
+router.delete('/deleteFood', function(req, res) {
     const body = req.body;
     var jsonResp = {};
     res.set('Content-Type', 'text/plain');

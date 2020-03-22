@@ -213,20 +213,31 @@ router.put('/updateIngredient', (req, res) => {
 
 /**
  * @swagger
- * /foodFactory/api/ingredients/deleteAllIngredients:
+ * /foodFactory/api/food/deleteIngredient:
  *   delete:
  *     tags:
  *       - Ingredient
- *     description: delete all ingredients which are present
+ *     description: delete ingredient
+ *     consumes:
+ *       - application/json
  *     produces:
  *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: ingredient
+ *         description: delete ingredient
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotNumber:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
  *       500:
  *         description: Internal server error
  */
-router.delete('/deleteAllIngredients', function(req, res) {
+router.delete('/deleteIngredient', function(req, res) {
     const body = req.body;
     var jsonResp = {};
     req.models.Ingredients.exists({
