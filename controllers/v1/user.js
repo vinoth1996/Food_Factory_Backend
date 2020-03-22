@@ -6,6 +6,7 @@ var randomString = require('randomstring')
 var jwt = require('jsonwebtoken');
 var verifyToken = require('../../verifyToken');
 var key = require('../../config/secretKey');
+
 /**
  * @swagger
  * /foodFactory/api/user/:
@@ -29,7 +30,7 @@ var key = require('../../config/secretKey');
  *            email:
  *              type: string
  *            password:
- *              type: string 
+ *              type: string
  *     responses:
  *       200:
  *         description: Success

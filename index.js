@@ -10,19 +10,10 @@ var pg = require('pg')
 var client = new pg.Client(config.getPgSqlConnectionString())
 client.connect()
 
-client.query('SELECT * FROM public."user"', (err, res)=>{
-  // console.log(res)
-  client.end()
-})
-
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-app.get('/testing', (req, res) => {
-  res.status(200).send("endpoint testing");
-});
 
 app.use(orm.express(config.getPgSqlConnectionString(), {
   define: function (db, models) {
@@ -75,7 +66,7 @@ app.use(orm.express(config.getPgSqlConnectionString(), {
 }));
 
 app.listen(port, () => {
-  console.log(`Server started on port`);
+  console.log(`Server started on port ${port}`);
 });
 
 app.use(require('./controllers'));

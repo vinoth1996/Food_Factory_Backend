@@ -367,7 +367,6 @@ router.delete('/deleteFood', function(req, res) {
                         jsonResp.message = "Internal server error"
                         res.status(500).send(JSON.stringify(jsonResp));            
                     }
-                    console.log("removed!");
                     jsonResp.status = "success";
                     jsonResp.message = "Food Deleted!";
                     res.send(JSON.stringify(jsonResp));

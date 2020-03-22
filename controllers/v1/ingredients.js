@@ -213,7 +213,7 @@ router.put('/updateIngredient', (req, res) => {
 
 /**
  * @swagger
- * /foodFactory/api/food/deleteIngredient:
+ * /foodFactory/api/ingredients/deleteIngredient:
  *   delete:
  *     tags:
  *       - Ingredient

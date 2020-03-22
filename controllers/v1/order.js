@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router()
 var config = require('../../config/dbConfig')
+var verifyToken = require('../../verifyToken');
 var pg = require('pg')
 
 var client = new pg.Client(config.getPgSqlConnectionString())
@@ -40,7 +41,7 @@ client.connect();
  *       500:
  *         description: Internal server error
  */
-router.post('/createOrder', function(req, res) {
+router.post('/createOrder', verifyToken, function(req, res) {
     const body = req.body;
     var jsonResp = {}
     req.models.Food.exists({
@@ -152,7 +153,7 @@ router.post('/createOrder', function(req, res) {
  *       500:
  *         description: Internal server error
  */
-router.get('/getAllOrders', function(req, res) {
+router.get('/getAllOrders', verifyToken, function(req, res) {
     const body = req.body;
     var jsonResp = {}
     req.models.User.find({
@@ -217,7 +218,7 @@ router.get('/getAllOrders', function(req, res) {
  *       500:
  *         description: Internal server error
  */
-router.put('/updateOrder', function(req, res) {
+router.put('/updateOrder', verifyToken, function(req, res) {
     const body = req.body;
     var jsonResp = {}
     req.models.Order.exists({

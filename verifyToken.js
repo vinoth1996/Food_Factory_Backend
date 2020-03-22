@@ -20,4 +20,3 @@ module.exports = verifyToken;
 
 
 
-//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpamF5QGdtYWlsLmNvbSIsImlhdCI6MTU4NDUyNjY3NCwiZXhwIjoxNjE2MDYyNjc0fQ.mpA-MYTpSkTmvTFIrjQRF2giAzvQJ0CEAhFSDV0m5g4"
