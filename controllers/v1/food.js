@@ -164,14 +164,72 @@ router.get('/getAllFoods', function(req, res) {
         if(data.length != 0) {
             jsonResp.status = "success"
             jsonResp.message = "Foods found"
-            // for(i=0; i < data.length; i++) {
-            //     data[i].ingredients  =''
-            // }
             jsonResp.data = data
             res.send(JSON.stringify(jsonResp));
         } else {
             jsonResp.status = "success"
             jsonResp.message = "No Foods found"
+            res.send(JSON.stringify(jsonResp));
+        }
+    })
+});
+
+/**
+ * @swagger
+ * /foodFactory/api/food/foodIngredients:
+ *   get:
+ *     tags:
+ *       - Food
+ *     description: ingredients of food
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: food
+ *         description: ingredients of food
+ *         schema:
+ *            type: object
+ *         properties:
+ *            lotNumber:
+ *              type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error 
+ */
+router.get('/foodIngredients', function(req, res) {
+    const body = req.body;
+    var jsonResp = {}
+    req.models.Food.exists({
+        lotNumber: body.lotNumber
+    }, function(err, exists) {
+        if(err) {
+            console.log(err);
+            jsonResp.status = "failed"
+            jsonResp.message = "Internal server error"
+            res.status(500).send(JSON.stringify(jsonResp));
+        }
+        if(exists) {
+            var sql = `Select "ingredientsLotNum" from "food" join "foodRel" on "lotNumber" = "foodLotNum" where "food"."lotNumber" = '${body.lotNumber}'`
+            client.query(sql, (err, ingredients) => {
+                if(err) {
+                    console.log(err);
+                    jsonResp.status = "failed"
+                    jsonResp.message = "Internal server error"
+                    res.send(JSON.stringify(jsonResp));        
+                } else {
+                    jsonResp.status = "success"
+                    jsonResp.message = "Ingredients found"
+                    jsonResp.data = ingredients.rows
+                    res.send(JSON.stringify(jsonResp));        
+                }
+            })
+        } else {
+            jsonResp.status = "failed"
+            jsonResp.message = "Food not found"
             res.send(JSON.stringify(jsonResp));
         }
     })
@@ -342,7 +400,7 @@ router.get('/foodByCost', function(req, res) {
     var jsonResp = {};
     res.set('Content-Type', 'text/plain');
     req.models.Food.find({
-        // costOfProduction: orm.gt(req.models.Food.find(sellingCost))
+        
     }, function(err, data) {
         if(err) {
             console.log(err);

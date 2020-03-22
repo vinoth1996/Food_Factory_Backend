@@ -287,7 +287,7 @@ router.delete('/deleteAllIngredients', function(req, res) {
 router.get('/ingredientsByQuantity', function(req, res) {
     var jsonResp = {};
     req.models.Ingredients.find({
-        // availableQuantity: orm.lt(thresholdQuantity)
+        
     }, function(err, data) {
         if(err) {
             console.log(err);
