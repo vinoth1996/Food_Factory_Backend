@@ -69,9 +69,9 @@ router.post('/createFood', function(req, res) {
                     jsonResp.message = "Internal server error"
                     res.status(500).send(JSON.stringify(jsonResp));        
                 } else {
-                    for(i=0; i < body.ingredients.length; i++) {
+                    body.ingredients.forEach(item => {
                         req.models.Ingredients.exists({
-                           lotNumber:  body.ingredients[i]
+                           lotNumber:  item
                         }, function(err, ingredientExists) {
                             if(err) {
                                 console.log(err);
@@ -82,7 +82,7 @@ router.post('/createFood', function(req, res) {
                             if(ingredientExists) {
                                 req.models.FoodRel.exists({
                                     foodLotNum: body.lotNumber,
-                                    ingredientsLotNum: body.ingredients[i]
+                                    ingredientsLotNum: item
                                 }, function(err, dataExist) {
                                     if(err) {
                                     console.log(err);
@@ -92,7 +92,7 @@ router.post('/createFood', function(req, res) {
                                     }  
                                     if(!dataExist){
                                         req.models.FoodRel.create([{
-                                            ingredientsLotNum: body.ingredients, 
+                                            ingredientsLotNum: item, 
                                             foodLotNum: body.lotNumber
                                         }], function (err, items) {
                                             if(err) {
@@ -112,7 +112,7 @@ router.post('/createFood', function(req, res) {
                                 jsonResp.message = "Ingredient not exists"                                                    
                             }      
                         })
-                    }
+                    })
                     jsonResp.status = "success"
                     jsonResp.message2 = "Food created"
                     req.models.Food.get(items[0].id, function (err, food) {
