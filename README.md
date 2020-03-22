@@ -1,21 +1,21 @@
 # Food_Factory_Backend
 
-1.Clone the repo
+1. Clone the repo
 
-2.Install PostgreSql
+2. Install PostgreSql
 
-3.Open pgAdmin 4
+3. Open pgAdmin 4
 
-4.Create database food_factory under servers -> postgresql
+4. Create database food_factory under servers -> postgresql
 
-5.Right click the food_factory -> Restore -> choose the backup file location under FileName box
+5. Right click the food_factory -> Restore -> choose the backup file location under FileName box
 
-6.Select postgres under RoleName, Click Restore
+6. Select postgres under RoleName, Click Restore
 
-7.Assign the pgSql.user, pgSql.password of your database in dbConfig.js file present in cloned repo.  
+7. Assign the pgSql.user, pgSql.password of your database in dbConfig.js file present in cloned repo.  
 
-8.NPM install
+8. NPM install
 
-9.Open http://localhost:3000/api-docs/ in your browser
+9. Open http://localhost:3000/api-docs/ in your browser
 
-10.Refer the Endpoint Swagger specification for request body values while executing the endpoint. 
+10. Refer the Endpoint Swagger specification for request body values while executing the endpoint. 
