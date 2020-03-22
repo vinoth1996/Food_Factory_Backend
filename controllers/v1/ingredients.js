@@ -8,7 +8,7 @@ client.connect();
 
 /**
  * @swagger
- * /createIngredient:
+ * /foodFactory/api/ingredients/createIngredient:
  *   post:
  *     tags:
  *       - Ingredient
@@ -95,7 +95,7 @@ router.post('/createIngredient', (req, res) => {
 
 /**
  * @swagger
- * /getAllIngredients:
+ * /foodFactory/api/ingredients/getAllIngredients:
  *   get:
  *     tags:
  *       - Ingredient
@@ -134,7 +134,7 @@ router.get('/getAllIngredients', function(req, res) {
 
 /**
  * @swagger
- * /updateIngredient:
+ * /foodFactory/api/ingredients/updateIngredient:
  *   put:
  *     tags:
  *       - Ingredient
@@ -213,7 +213,7 @@ router.put('/updateIngredient', (req, res) => {
 
 /**
  * @swagger
- * /deleteAllIngredients:
+ * /foodFactory/api/ingredients/deleteAllIngredients:
  *   delete:
  *     tags:
  *       - Ingredient
@@ -271,7 +271,7 @@ router.delete('/deleteAllIngredients', function(req, res) {
 
 /**
  * @swagger
- * /ingredientsByQuantity:
+ * /foodFactory/api/ingredients/ingredientsByQuantity:
  *   get:
  *     tags:
  *       - Ingredient
@@ -297,7 +297,7 @@ router.get('/ingredientsByQuantity', function(req, res) {
         }
         if(data.length != 0) {
             var sql = 'select *from "ingredients" where "availableQuantity" < "thresholdQuantity"';
-            client.query(sql, (err, ingredients)=> {
+            client.query(sql, (err, ingredients) => {
                 if(err) {
                     console.log(err);
                     jsonResp.status = "failed"

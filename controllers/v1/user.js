@@ -8,7 +8,7 @@ var verifyToken = require('../../verifyToken');
 var key = require('../../config/secretKey');
 /**
  * @swagger
- * /:
+ * /foodFactory/api/user/:
  *   post:
  *     tags:
  *       - User
@@ -90,7 +90,7 @@ router.post('/', function(req, res) {
 
 /**
  * @swagger
- * /auth:
+ * /foodFactory/api/user/auth:
  *   post:
  *     tags:
  *       - User
@@ -171,7 +171,7 @@ router.post('/auth', function (req, res) {
 
 /**
  * @swagger
- * /:
+ * /foodFactory/api/user/:
  *   put:
  *     tags:
  *       - User
@@ -253,7 +253,7 @@ router.put('/', verifyToken, function (req, res) {
 
 /**
  * @swagger
- * /status:
+ * /foodFactory/api/user/status:
  *   put:
  *     tags:
  *       - User
@@ -330,7 +330,7 @@ router.put('/status', verifyToken, function(req, res) {
 
 /**
  * @swagger
- * /:
+ * /foodFactory/api/user/:
  *   delete:
  *     tags:
  *       - User
@@ -400,7 +400,7 @@ router.delete('/', verifyToken, function (req, res) {
 
 /**
  * @swagger
- * /resetPassword:
+ * /foodFactory/api/user/resetPassword:
  *   post:
  *     tags:
  *       - User

@@ -8,7 +8,7 @@ client.connect();
 
 /**
  * @swagger
- * /createFood:
+ * /foodFactory/api/food/createFood:
  *   post:
  *     tags:
  *       - Food
@@ -29,7 +29,7 @@ client.connect();
  *            cuisine:
  *              type: string
  *            ingredients:
- *              type: string 
+ *              type: array 
  *            lotNumber:
  *              type: string
  *            costOfProduction: 
@@ -69,35 +69,50 @@ router.post('/createFood', function(req, res) {
                     jsonResp.message = "Internal server error"
                     res.status(500).send(JSON.stringify(jsonResp));        
                 } else {
-                    // for(i=0; body.ingredients.length; i++) {
-
-                    // }
-                    req.models.FoodRel.exists({
-                        foodLotNum: body.lotNumber,
-                        ingredientsLotNum: body.ingredients
-                    }, function(err, dataExist) {
-                        if(err) {
-                        console.log(err);
-                        jsonResp.status = "failed"
-                        jsonResp.message = "Internal server error"
-                        res.status(500).send(JSON.stringify(jsonResp));                                        
-                        }  
-                        if(!dataExist){
-                            req.models.FoodRel.create([{
-                                ingredientsLotNum: body.ingredients, 
-                                foodLotNum: body.lotNumber
-                            }], function (err, items) {
-                                if(err) {
+                    for(i=0; i < body.ingredients.length; i++) {
+                        req.models.Ingredients.exists({
+                           lotNumber:  body.ingredients[i]
+                        }, function(err, ingredientExists) {
+                            if(err) {
+                                console.log(err);
+                                jsonResp.status = "failed"
+                                jsonResp.message = "Internal server error"
+                                res.status(500).send(JSON.stringify(jsonResp));                                        
+                            }
+                            if(ingredientExists) {
+                                req.models.FoodRel.exists({
+                                    foodLotNum: body.lotNumber,
+                                    ingredientsLotNum: body.ingredients[i]
+                                }, function(err, dataExist) {
+                                    if(err) {
                                     console.log(err);
                                     jsonResp.status = "failed"
                                     jsonResp.message = "Internal server error"
-                                    res.status(500).send(JSON.stringify(jsonResp));                                                    
-                                } else {
-                                    jsonResp.message1 = "Values added in foodRel";                      
-                                }
-                            });    
-                        }
-                    })
+                                    res.status(500).send(JSON.stringify(jsonResp));                                        
+                                    }  
+                                    if(!dataExist){
+                                        req.models.FoodRel.create([{
+                                            ingredientsLotNum: body.ingredients, 
+                                            foodLotNum: body.lotNumber
+                                        }], function (err, items) {
+                                            if(err) {
+                                                console.log(err);
+                                                jsonResp.status = "failed"
+                                                jsonResp.message = "Internal server error"
+                                                res.status(500).send(JSON.stringify(jsonResp));                                                    
+                                            } else {
+                                                jsonResp.message1 = "Values added in foodRel";                      
+                                            }
+                                        });    
+                                    }
+                                })            
+                            }
+                            if(!ingredientExists) {
+                                jsonResp.status = "failed"
+                                jsonResp.message = "Ingredient not exists"                                                    
+                            }      
+                        })
+                    }
                     jsonResp.status = "success"
                     jsonResp.message2 = "Food created"
                     req.models.Food.get(items[0].id, function (err, food) {
@@ -122,7 +137,7 @@ router.post('/createFood', function(req, res) {
 
 /**
  * @swagger
- * /getAllFoods:
+ * /foodFactory/api/food/getAllFoods:
  *   get:
  *     tags:
  *       - Food
@@ -164,7 +179,7 @@ router.get('/getAllFoods', function(req, res) {
 
 /**
  * @swagger
- * /updateFood:
+ * /foodFactory/api/food/updateFood:
  *   put:
  *     tags:
  *       - Food
@@ -240,7 +255,7 @@ router.put('/updateFood', function(req, res) {
 
 /**
  * @swagger
- * /deleteAllFoods:
+ * /foodFactory/api/food/deleteAllFoods:
  *   delete:
  *     tags:
  *       - Food
@@ -310,7 +325,7 @@ router.delete('/deleteAllFoods', function(req, res) {
 
 /**
  * @swagger
- * /foodByCost:
+ * /foodFactory/api/food/foodByCost:
  *   get:
  *     tags:
  *       - Food

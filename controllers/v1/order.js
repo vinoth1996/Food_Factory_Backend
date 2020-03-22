@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router()
+var config = require('../../config/dbConfig')
+var pg = require('pg')
+
+var client = new pg.Client(config.getPgSqlConnectionString())
+client.connect();
 
 /**
  * @swagger
- * /createOrder:
+ * /foodFactory/api/order/createOrder:
  *   post:
  *     tags:
  *       - Order
@@ -123,7 +128,7 @@ router.post('/createOrder', function(req, res) {
 
 /**
  * @swagger
- * /getAllOrders:
+ * /foodFactory/api/order/getAllOrders:
  *   get:
  *     tags:
  *       - Order
@@ -150,8 +155,6 @@ router.post('/createOrder', function(req, res) {
 router.get('/getAllOrders', function(req, res) {
     const body = req.body;
     var jsonResp = {}
-    var orders = []
-    var details = {}
     req.models.User.find({
         email: body.email
     }, function(err, data) {
@@ -162,50 +165,18 @@ router.get('/getAllOrders', function(req, res) {
             res.status(500).send(JSON.stringify(jsonResp));                    
         } 
         if(data.length != 0) {
-            req.models.Order.find({
-                email: body.email
-            }, function(err, data1) {
-                console.log('......' + JSON.stringify(data1[0]))
+            var sql = `Select * from "order" join "orderRel" on "id" = "orderNum" where "order".email = '${body.email}'`
+            client.query(sql, (err, orders) => {
                 if(err) {
                     console.log(err);
                     jsonResp.status = "failed"
                     jsonResp.message = "Internal server error"
-                    res.status(500).send(JSON.stringify(jsonResp));                            
-                }
-                if(data1.length != 0) {
-                    req.models.OrderRel.find({
-                        orderNum: parseInt(data1[0].id)
-                    }, function(err, dataRel) {
-                        console.log('......' + JSON.stringify(dataRel))
-                        if(err) {
-                            console.log(err);
-                            jsonResp.status = "failed"
-                            jsonResp.message = "Internal server error"
-                            res.status(500).send(JSON.stringify(jsonResp));                            
-                        }
-                        // if(dataRel.length != 0) {
-                        //     jsonResp.status = "success"
-                        //     jsonResp.message = "Orders found"
-                        //     jsonResp.name = data[0].name
-                        //     for(i=0; i < data1.length; i++) {
-                        //         details.orderNum = data1[i].id
-                        //         details.orderDate = data1[i].orderDate
-                        //         details.status = data1[i].status
-                        //         details.dateOfDelivery = data1[i].dateOfDelivery
-                        //         details.modeOfTransport = data1[i].modeOfTransport
-                        //         details.email = data1[i].email
-                        //         for(j=0; j < dataRel.length; j++) {
-                        //             details.foodLotNumber = dataRel[j].foodLotNum
-                        //             details.quantity = dataRel[j].quantity
-                        //             details.amount = dataRel[j].amount
-                        //         }
-                        //         orders.push(details)
-                        //         details = {};
-                        //     }
-                        //     jsonResp.orders = orders
-                        //     res.send(JSON.stringify(jsonResp));
-                        // }        
-                    })
+                    res.send(JSON.stringify(jsonResp));        
+                } else {
+                    jsonResp.status = "success"
+                    jsonResp.message = "Orders found"
+                    jsonResp.data = orders.rows
+                    res.send(JSON.stringify(jsonResp));        
                 }
             })
         } else {
@@ -218,7 +189,7 @@ router.get('/getAllOrders', function(req, res) {
 
 /**
  * @swagger
- * /updateOrder:
+ * /foodFactory/api/order/updateOrder:
  *   put:
  *     tags:
  *       - Order
