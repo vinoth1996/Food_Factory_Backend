@@ -7,7 +7,12 @@ var swaggerSpec = require('./config/swagger')
 const app = express();
 var pg = require('pg')
 
-var client = new pg.Client(config.getPgSqlConnectionString())
+var client = new pg.Client({
+  connectionString: config.getPgSqlConnectionString(),
+  ssl: {
+    rejectUnauthorized: false
+  }
+})
 client.connect()
 
 const port = process.env.PORT || 3000;
