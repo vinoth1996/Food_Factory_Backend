@@ -51,6 +51,7 @@ router.post('/', function(req, res) {
         }
         if(!exists) {
             var hash = bcrypt.hashSync(body.password, 10);
+            // setTimeout(() => {
             req.models.User.create([{
                 name: body.name,
                 email: body.email,
@@ -81,6 +82,7 @@ router.post('/', function(req, res) {
                     res.send(JSON.stringify(jsonResp));
                 });
             })
+            // }, 300000);
         } else {
             jsonResp.status = "failed";
             jsonResp.message = "User Already Exists!";
