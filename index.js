@@ -69,4 +69,8 @@ app.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
 
+app.get('/', (req, res) => {
+  res.send("Test Successful");
+});
+
 app.use(require('./controllers'));
