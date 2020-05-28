@@ -16,6 +16,8 @@
 
 8. NPM install
 
-9. Open http://localhost:3000/api-docs/ in your browser
+9. Node index.js
 
-10. Refer the Endpoint Swagger specification for request body values while executing the endpoint. 
+10. Open http://localhost:3000/api-docs/ in your browser
+
+11. Refer the Endpoint Swagger specification for request body values while executing the endpoint. 
